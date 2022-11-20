@@ -11,6 +11,7 @@ export default {
     asset: String
   }
 }
+import * as localforage from 'localforage';
 
 window.onload = function () {
 // eslint-disable-next-line no-unused-vars
@@ -19,44 +20,58 @@ window.onload = function () {
     download_embeddings(284)
   });
 
-  async function download_embeddings(range) {
-    let fetches = [];
-    for (let i = 0; i <= range; i++) {
-      fetches.push("/data/x" + ('000' + i).slice(-3))
+  function control_data(url) {
+    localforage.getItem()
 
-    }
-    const data = await Promise.all(fetches.map(async url => {
-      const resp = await fetch(url);
-      let stat = parseInt(document.getElementById("status").innerText);
-      stat += 1;
-      document.getElementById("status").innerText = stat.toString();
-      return resp.text();
-    }));
-
-    let obj = {};
-    data.forEach(chunk =>
-        chunk.split('\n').forEach(row => {
-              let pic_name = row.split(',')[0];
-              let arr = row.split(',')
-              arr.shift()
-              Object.assign(obj, {[pic_name]: arr})
-            }
-        ));
-
-    Object.keys(obj).slice(0, 10).forEach(
-        key => console.log({[key]: obj[key]})
-    )
   }
+}
 
-  // function make_obj(line) {
-  //   let return_obj = {};
-  //   let rows = line.split('\n');
-  //   for (const row in rows) {
-  //     let div = row.split(',')
-  //     Object.assign(return_obj, {[div[0]]: div.shift()})
-  //   }
-  //   return return_obj;
-  // }
+function download_embeddings(range) {
+  for (let i = 0; i <= range; i++) {
+    (async () => {
+      const resp = await fetch("/data/x" + ('000' + i).slice(-3));
+      console.log(await resp.text());
+    })()
+  }
+  //let fetches = [];
+  //for (let i = 0; i <= range; i++) {
+  //  fetches.push("/data/x" + ('000' + i).slice(-3))
+  //
+  //}
+  //const data = await Promise.all(fetches.map(async url => {
+  //  const resp = await fetch(url);
+  //  let stat = parseInt(document.getElementById("status").innerText);
+  //  stat += 1;
+  //  document.getElementById("status").innerText = stat.toString();
+  //  return resp.text();
+  //}));
+  //
+  //let obj = {};
+  //data.forEach(chunk =>
+  //    chunk.split('\n').forEach(row => {
+  //          let pic_name = row.split(',')[0];
+  //          let str_arr = row.split(',')
+  //          str_arr.shift()
+  //          let arr;
+  //          str_arr.forEach(val => arr.push(parseFloat(val)));
+  //          Object.assign(obj, {[pic_name]: arr})
+  //        }
+  //    ));
+
+  // Object.keys(obj).slice(0, 10).forEach(
+  //     key => console.log({[key]: obj[key]})
+  // )
+  //}
+
+// function make_obj(line) {
+//   let return_obj = {};
+//   let rows = line.split('\n');
+//   for (const row in rows) {
+//     let div = row.split(',')
+//     Object.assign(return_obj, {[div[0]]: div.shift()})
+//   }
+//   return return_obj;
+// }
 }
 
 
