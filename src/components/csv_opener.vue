@@ -1,5 +1,7 @@
 <template>
   <h1 id="asset">{{ asset }}</h1>
+  <button id="test_button">PUSH ME!</button>
+  <h1 id="status">0</h1>
 </template>
 
 <script>
@@ -10,16 +12,52 @@ export default {
   }
 }
 
+window.onload = function () {
 // eslint-disable-next-line no-unused-vars
-let txt = document.getElementById("asset")
-//txt.addEventListener("click", function () {
-//
-//  fetch("/embeddings_1.csv")
-//      .then((response) => console.log(response.text()))
-//      .then((data) => {
-//        console.log(data)
-//      })
-//});
+  let txt = document.getElementById("test_button")
+  txt.addEventListener("click", function () {
+    download_embeddings(284)
+  });
+
+  async function download_embeddings(range) {
+    let fetches = [];
+    for (let i = 0; i <= range; i++) {
+      fetches.push("/data/x" + ('000' + i).slice(-3))
+
+    }
+    const data = await Promise.all(fetches.map(async url => {
+      const resp = await fetch(url);
+      let stat = parseInt(document.getElementById("status").innerText);
+      stat += 1;
+      document.getElementById("status").innerText = stat.toString();
+      return resp.text();
+    }));
+
+    let obj = {};
+    data.forEach(chunk =>
+        chunk.split('\n').forEach(row => {
+              let pic_name = row.split(',')[0];
+              let arr = row.split(',')
+              arr.shift()
+              Object.assign(obj, {[pic_name]: arr})
+            }
+        ));
+
+    Object.keys(obj).slice(0, 10).forEach(
+        key => console.log({[key]: obj[key]})
+    )
+  }
+
+  // function make_obj(line) {
+  //   let return_obj = {};
+  //   let rows = line.split('\n');
+  //   for (const row in rows) {
+  //     let div = row.split(',')
+  //     Object.assign(return_obj, {[div[0]]: div.shift()})
+  //   }
+  //   return return_obj;
+  // }
+}
 
 
 </script>
