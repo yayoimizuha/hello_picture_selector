@@ -5,6 +5,7 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
 export default {
   name: "csv_opener",
   props: {
